@@ -1,25 +1,25 @@
 'use strict';
 
-    module.exports = {getAllUsers, saveUser, getOneUser, updateUser, delUser};
+    module.exports = {getAllAssets, saveAsset, getOneAsset, updateAsset, delAsset};
 
-    //GET /user
-    function getAllUsers(req, res, next) {
+    //GET /asset
+    function getAllAssets(req, res, next) {
 
-        pool.query('SELECT * FROM users' , function(err, result) {
+        pool.query('SELECT * FROM assets' , function(err, result) {
 
             if (err) console.log(err);
-            res.json({ users: result.rows});
+            res.json({ assets: result.rows});
 
         });
 
     }
 
-    //POST /user
-    function saveUser(req, res, next) {
+    //POST /asset
+    function saveAsset(req, res, next) {
 
         pool.query(
-            "INSERT INTO users(firstname, lastname, email) values($1, $2, $3) returning *", 
-            [req.body.firstname, req.body.lastname, req.body.email], 
+            "INSERT INTO assets(type, attributes) values($1, $2) returning *", 
+            [req.body.type, req.body.attributes], 
             function(err, result) {
             
                 if(err){
@@ -28,7 +28,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User added to the list!", 
+                    description: "Asset added to the list!", 
                     object: result.rows[0]
                 });
             
@@ -36,13 +36,13 @@
 
     }
 
-    //GET /user/{id}
-    function getOneUser(req, res, next) {
+    //GET /asset/{id}
+    function getOneAsset(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            'SELECT * FROM users WHERE id=($1)', 
+            'SELECT * FROM assets WHERE id=($1)', 
             [id], 
             function(err, result) {
 
@@ -60,14 +60,14 @@
 
     }
 
-    //PUT /user/{id} operationId
-    function updateUser(req, res, next) {
+    //PUT /asset/{id}
+    function updateAsset(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            "UPDATE users SET firstname=($1), lastname=($2), email=($3) WHERE id=($4) returning *",
-            [req.body.firstname, req.body.lastname, req.body.email, id],
+            "UPDATE assets SET type=($1), attributes=($2), WHERE id=($3) returning *",
+            [req.body.type, req.body.attributes, id],
             function(err, result) {
 
                 if(err){
@@ -76,7 +76,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User updated!", 
+                    description: "Asset updated!", 
                     object: result.rows[0]
                 });
             
@@ -84,13 +84,13 @@
 
     }
 
-    //DELETE /user/{id} operationId
-    function delUser(req, res, next) {
+    //DELETE /asset/{id}
+    function delAsset(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            "DELETE FROM users WHERE id=($1) returning *",
+            "DELETE FROM assets WHERE id=($1) returning *",
             [id],
             function(err, result) {
 
@@ -102,7 +102,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User deleted!", 
+                    description: "Asset deleted!", 
                     object: result.rows[0]
                 });
             

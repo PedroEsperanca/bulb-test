@@ -1,25 +1,25 @@
 'use strict';
 
-    module.exports = {getAllUsers, saveUser, getOneUser, updateUser, delUser};
+    module.exports = {getAllAllocations, saveAllocation, getOneAllocation, updateAllocation, delAllocation};
 
-    //GET /user
-    function getAllUsers(req, res, next) {
+    //GET /allocation
+    function getAllAllocations(req, res, next) {
 
-        pool.query('SELECT * FROM users' , function(err, result) {
+        pool.query('SELECT * FROM allocations' , function(err, result) {
 
             if (err) console.log(err);
-            res.json({ users: result.rows});
+            res.json({ allocations: result.rows});
 
         });
 
     }
 
-    //POST /user
-    function saveUser(req, res, next) {
+    //POST /allocation
+    function saveAllocation(req, res, next) {
 
         pool.query(
-            "INSERT INTO users(firstname, lastname, email) values($1, $2, $3) returning *", 
-            [req.body.firstname, req.body.lastname, req.body.email], 
+            "INSERT INTO allocations(user_id, asset_id, untill) values($1, $2, $3) returning *", 
+            [req.body.user_id, req.body.asset_id, req.body.untill], 
             function(err, result) {
             
                 if(err){
@@ -28,7 +28,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User added to the list!", 
+                    description: "Allocation added to the list!", 
                     object: result.rows[0]
                 });
             
@@ -36,13 +36,13 @@
 
     }
 
-    //GET /user/{id}
-    function getOneUser(req, res, next) {
+    //GET /allocation/{id}
+    function getOneAllocation(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            'SELECT * FROM users WHERE id=($1)', 
+            'SELECT * FROM allocations WHERE id=($1)', 
             [id], 
             function(err, result) {
 
@@ -60,14 +60,14 @@
 
     }
 
-    //PUT /user/{id} operationId
-    function updateUser(req, res, next) {
+    //PUT /allocation/{id} operationId
+    function updateAllocation(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            "UPDATE users SET firstname=($1), lastname=($2), email=($3) WHERE id=($4) returning *",
-            [req.body.firstname, req.body.lastname, req.body.email, id],
+            "UPDATE allocations SET type=($1), attributes=($2), WHERE id=($3) returning *",
+            [req.body.type, req.body.attributes, id],
             function(err, result) {
 
                 if(err){
@@ -76,7 +76,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User updated!", 
+                    description: "Allocation updated!", 
                     object: result.rows[0]
                 });
             
@@ -84,13 +84,13 @@
 
     }
 
-    //DELETE /user/{id} operationId
-    function delUser(req, res, next) {
+    //DELETE /allocation/{id} operationId
+    function delAllocation(req, res, next) {
 
         var id = req.swagger.params.id.value;
 
         pool.query(
-            "DELETE FROM users WHERE id=($1) returning *",
+            "DELETE FROM allocations WHERE id=($1) returning *",
             [id],
             function(err, result) {
 
@@ -102,7 +102,7 @@
 
                 res.json({
                     success: 1, 
-                    description: "User deleted!", 
+                    description: "Allocation deleted!", 
                     object: result.rows[0]
                 });
             

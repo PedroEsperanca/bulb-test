@@ -20,7 +20,7 @@ produces:
 tags: [
   { name: 'user'},
   { name: 'asset'},
-  { name: 'alocation'}
+  { name: 'allocation'}
 ]
 paths:
   /user:
@@ -234,6 +234,44 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /allocation:
+    # our controller name
+    x-swagger-router-controller: allocation
+    get:
+      tags: ['allocation']
+      description: get the allocation list
+      # define the type of response for Success "200" and Error
+      operationId: getAllAllocations
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetAllocationsListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags: ['allocation']
+      description: add a new allocation to the list
+
+      # movie info to be stored
+      parameters:
+        - name: id
+          description: allocation's id
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Allocation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -293,7 +331,23 @@ definitions:
         type: object
         description: asset's information
     required:
-      - id
+      - type
+  Allocation:
+    type: object
+    properties:
+      id:
+        type: string
+      user_id:
+        type: string
+      asset_id:
+        type: string
+      untill:
+        type: string
+        description: untill when is the asset allocated to the user
+    required:
+      - user_id
+      - asset_id
+      - untill
   GeneralResponse:
     type: object
     properties:
@@ -331,6 +385,18 @@ definitions:
         type: string
       attributes:
         type: object
+  GetAllocationsListResponse:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      user_id: 
+        type: string
+      asset_id:
+        type: string
+      untill:
+        type: string
   ErrorResponse:
     required:
       - message
