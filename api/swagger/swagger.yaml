@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
+  title: Asset Management API Test
 # during dev, should point to your local machine
 host: localhost:10010
 # basePath prefixes all resource paths 
@@ -19,7 +19,6 @@ produces:
   - application/json
 tags: [
   { name: 'user'},
-  { name: 'movie'},
   { name: 'asset'},
   { name: 'alocation'}
 ]
@@ -235,112 +234,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /movie:
-    # our controller name
-    x-swagger-router-controller: movie
-    get:
-      tags: ['movie']
-      description: get the movies list
-      # define the type of response for Success "200" and Error
-      operationId: getAll
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/GetMoviesListResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    post:
-      tags: ['movie']
-      description: add a new movie to the list
-      operationId: save
-      # movie info to be stored
-      parameters:
-        - name: title
-          description: Movie properties
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/Movie"
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/GeneralResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /movie/{id}:
-    # our controller name
-    x-swagger-router-controller: movie
-    get:
-      tags: ['movie']
-      description: get a movie
-      operationId: getOne
-      # define the type of response for Success "200" and Error
-      parameters:
-        - name: id
-          type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/GetMovieResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    put:
-      tags: ['movie']
-      description: update a movie
-      operationId: update
-      # define the parameters
-      parameters:
-        - name: id
-          description: Movie id
-          type: string
-          in: path
-          required: true
-        - name: title
-          description: Movie properties
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/Movie"
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/GeneralResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    delete:
-      tags: ['movie']
-      description: delete a movie
-      operationId: delMovie
-      # define the parameters
-      parameters:
-        - name: id
-          description: Movie id
-          type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/GeneralResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -373,22 +266,6 @@ definitions:
               type: string
             body:
               type: object
-  GetMoviesListResponse:
-    required:
-      - movies
-    properties:
-      # The array of movies
-      movies:
-        type: array
-        items: 
-          type: object
-          properties:
-            id:
-              type: string
-            title:
-              type: string
-            year:
-              type: number
   User:
     type: object
     properties:
@@ -417,18 +294,6 @@ definitions:
         description: asset's information
     required:
       - id
-  Movie:
-    type: object
-    properties:
-      title:
-        type: string
-        description: task object name
-      year:
-        type: number
-        description: task description
-    required:
-      - title
-      - year
   GeneralResponse:
     type: object
     properties:
@@ -444,18 +309,6 @@ definitions:
     required:
       - success
       - description
-  GetMovieResponse:
-    required:
-      - id
-      - title
-      - year
-    properties:
-      id:
-        type: string
-      title: 
-        type: string
-      year:
-        type: number
   GetUserResponse:
     required:
       - firstname
