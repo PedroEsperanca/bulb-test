@@ -17,11 +17,18 @@ consumes:
 # format of the responses to the client (Accepts)
 produces:
   - application/json
+tags: [
+  { name: 'user'},
+  { name: 'movie'},
+  { name: 'asset'},
+  { name: 'alocation'}
+]
 paths:
   /user:
     # our controller name
     x-swagger-router-controller: user
     get:
+      tags: ['user']
       description: get the users list
       # define the type of response for Success "200" and Error
       operationId: getAllUsers
@@ -35,12 +42,12 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
+      tags: ['user']
       description: add a new user to the list
       operationId: saveUser
-      # movie info to be stored
       parameters:
-        - name: firstName
-          description: user's first name
+        - name: user
+          description: the user object
           in: body
           required: true
           schema:
@@ -58,6 +65,7 @@ paths:
     # our controller name
     x-swagger-router-controller: user
     get:
+      tags: ['user']
       description: get a user
       operationId: getOneUser
       # define the type of response for Success "200" and Error
@@ -76,6 +84,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     put:
+      tags: ['user']
       description: update a user
       operationId: updateUser
       # define the parameters
@@ -85,8 +94,8 @@ paths:
           type: string
           in: path
           required: true
-        - name: title
-          description: Movie properties
+        - name: user
+          description: User properties
           in: body
           required: true
           schema:
@@ -101,7 +110,8 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     delete:
-      description: delete a movie
+      tags: ['user']
+      description: delete a user
       operationId: delUser
       # define the parameters
       parameters:
@@ -119,10 +129,117 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /asset:
+    # our controller name
+    x-swagger-router-controller: asset
+    get:
+      tags: ['asset']
+      description: get the assets list
+      # define the type of response for Success "200" and Error
+      operationId: getAllAssets
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetAssetsListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags: ['asset']
+      description: add a new asset to the list
+
+      # movie info to be stored
+      parameters:
+        - name: id
+          description: asset's id
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Asset"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /asset/{id}:
+    # our controller name
+    x-swagger-router-controller: asset
+    get:
+      tags: ['asset']
+      description: get an asset
+      operationId: getOneAsset
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetAssetResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags: ['asset']
+      description: update an asset
+      operationId: updateAsset
+      # define the parameters
+      parameters:
+        - name: id
+          description: Asset id
+          type: string
+          in: path
+          required: true
+        - name: asset
+          description: Asset properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Asset"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags: ['asset']
+      description: delete an asset
+      operationId: delAsset
+      # define the parameters
+      parameters:
+        - name: id
+          description: Asset id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /movie:
     # our controller name
     x-swagger-router-controller: movie
     get:
+      tags: ['movie']
       description: get the movies list
       # define the type of response for Success "200" and Error
       operationId: getAll
@@ -136,6 +253,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
+      tags: ['movie']
       description: add a new movie to the list
       operationId: save
       # movie info to be stored
@@ -159,6 +277,7 @@ paths:
     # our controller name
     x-swagger-router-controller: movie
     get:
+      tags: ['movie']
       description: get a movie
       operationId: getOne
       # define the type of response for Success "200" and Error
@@ -177,6 +296,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     put:
+      tags: ['movie']
       description: update a movie
       operationId: update
       # define the parameters
@@ -202,6 +322,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     delete:
+      tags: ['movie']
       description: delete a movie
       operationId: delMovie
       # define the parameters
@@ -239,6 +360,19 @@ definitions:
               type: string
             email:
               type: string
+  GetAssetsListResponse:
+    required:
+      - assets
+    properties:
+      assets:
+        type: array
+        items: 
+          type: object
+          properties:
+            id:
+              type: string
+            body:
+              type: object
   GetMoviesListResponse:
     required:
       - movies
@@ -258,19 +392,31 @@ definitions:
   User:
     type: object
     properties:
-      firstName:
+      firstname:
         type: string
         description: user's first name
-      lastName:
+      lastname:
         type: string
         description: user's last name
       email:
         type: string
         description: user's email
     required:
-      - firstName
-      - lastName
+      - firstname
+      - lastname
       - email
+  Asset:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        description: asset's information
+    required:
+      - id
   Movie:
     type: object
     properties:
@@ -291,7 +437,10 @@ definitions:
         description: returns 1 if successful
       description:
         type: string
-        description: a short comment 
+        description: a short comment
+      object:
+        type: object
+        description: the relevant object
     required:
       - success
       - description
@@ -309,16 +458,26 @@ definitions:
         type: number
   GetUserResponse:
     required:
-      - firstName
-      - lastName
+      - firstname
+      - lastname
       - email
     properties:
-      firstName:
+      firstname:
         type: string
-      lastName: 
+      lastname: 
         type: string
       email:
-        type: number
+        type: string
+  GetAssetResponse:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      type: 
+        type: string
+      attributes:
+        type: object
   ErrorResponse:
     required:
       - message
