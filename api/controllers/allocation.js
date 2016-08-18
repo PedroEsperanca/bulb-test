@@ -1,11 +1,35 @@
 'use strict';
 
-    module.exports = {getAllAllocations, saveAllocation, getOneAllocation, updateAllocation, delAllocation};
+    module.exports = {getAllocations, saveAllocation, getOneAllocation, updateAllocation, delAllocation};
 
     //GET /allocation
-    function getAllAllocations(req, res, next) {
+    function getAllocations(req, res, next) {
 
-        pool.query('SELECT * FROM allocations' , function(err, result) {
+        var queryString = 'SELECT * FROM allocations';
+        var queryParams = [];
+
+        if(req.query.user_id){
+            queryParams.push(req.query.user_id);
+            queryString = 
+                queryString + 
+                ((queryParams.length > 1) ? ' AND' : ' WHERE') +
+                ' user_id=($'+queryParams.length+')';
+        }
+        if(req.query.asset_id){
+            queryParams.push(req.query.asset_id);
+            queryString = 
+                queryString + 
+                ((queryParams.length > 1) ? ' AND' : ' WHERE') +
+                ' asset_id=($'+queryParams.length+')';
+        }
+        if(req.query.only_current){
+            queryString = 
+                queryString + 
+                ((queryParams.length) ? ' AND' : ' WHERE') +
+                ' untill >= now()';
+        }
+
+        pool.query(queryString, queryParams, function(err, result) {
 
             if (err) console.log(err);
             res.json({ allocations: result.rows});
@@ -17,27 +41,44 @@
     //POST /allocation
     function saveAllocation(req, res, next) {
 
+        //TODO: check if asset is being used
         pool.query(
-            "INSERT INTO allocations(user_id, asset_id, untill) values($1, $2, $3) returning *", 
-            [req.body.user_id, req.body.asset_id, req.body.untill], 
+            "SELECT * FROM allocations WHERE ( asset_id=($1) AND untill >= now() )", 
+            [req.body.asset_id], 
             function(err, result) {
-            
-                if(err){
-                    console.log(err);
+
+                if(err){console.log(err);}
+
+                if(result.rowCount){
+
+                    res.json({
+                        success: 0, 
+                        description: "Asset already allocated for the time being", 
+                        object: result.rows[0]
+                    });
+
+                } else {
+
+                    pool.query(
+                        "INSERT INTO allocations(user_id, asset_id, untill) values($1, $2, $3) returning *", 
+                        [req.body.user_id, req.body.asset_id, req.body.untill], 
+                        function(err, result) {
+                        
+                            if(err){
+                                console.log(err);
+                            }
+
+                            res.json({
+                                success: 1, 
+                                description: "Allocation added to the list!", 
+                                object: result.rows[0]
+                            });
+                        
+                        });
+
                 }
 
-                console.log('-.-..-.-.-.-.-.-.');
-                console.log(req.body);
-                console.log(result);
-
-                res.json({
-                    success: 1, 
-                    description: "Allocation added to the list!", 
-                    object: result.rows[0]
-                });
-            
             });
-
     }
 
     //GET /allocation/{id}
@@ -69,9 +110,10 @@
 
         var id = req.swagger.params.id.value;
 
+        // user_id, asset_id, untill
         pool.query(
-            "UPDATE allocations SET type=($1), attributes=($2), WHERE id=($3) returning *",
-            [req.body.type, req.body.attributes, id],
+            "UPDATE allocations SET user_id=($1), asset_id=($2), untill=($3) WHERE id=($4) returning *",
+            [req.body.user_id, req.body.asset_id, req.body.untill, id],
             function(err, result) {
 
                 if(err){
@@ -101,8 +143,6 @@
                 if(err){
                     console.log(err);
                 }
-
-                console.log(result);
 
                 res.json({
                     success: 1, 

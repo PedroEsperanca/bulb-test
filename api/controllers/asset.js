@@ -10,7 +10,7 @@
             if (err) {
                 console.log(err);
             }
-            
+
             res.json({ assets: result.rows});
 
         });
@@ -100,8 +100,6 @@
                 if(err){
                     console.log(err);
                 }
-
-                console.log(result);
 
                 res.json({
                     success: 1, 

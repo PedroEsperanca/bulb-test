@@ -240,7 +240,23 @@ paths:
       tags: ['allocation']
       description: get the allocation list
       # define the type of response for Success "200" and Error
-      operationId: getAllAllocations
+      operationId: getAllocations
+      parameters:
+        - name: user_id
+          in: query
+          description: The user to filter allocations by
+          required: false
+          type: string
+        - name: asset_id
+          in: query
+          description: The asset to filter allocations by
+          required: false
+          type: string
+        - name: only_current
+          in: query
+          description: Get only current allocations ?
+          required: false
+          type: boolean
       responses:
         "200":
           description: Success
@@ -261,6 +277,74 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/Allocation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /allocation/{id}:
+    # our controller name
+    x-swagger-router-controller: allocation
+    get:
+      tags: ['allocation']
+      description: get an allocation
+      operationId: getOneAllocation
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetAllocationResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags: ['allocation']
+      description: update an asset
+      operationId: updateAllocation
+      # define the parameters
+      parameters:
+        - name: id
+          description: Allocation id
+          type: string
+          in: path
+          required: true
+        - name: allocation
+          description: Allocation properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Allocation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags: ['allocation']
+      description: delete an Allocation
+      operationId: delAllocation
+      # define the parameters
+      parameters:
+        - name: id
+          description: Allocation id
+          type: string
+          in: path
+          required: true
       responses:
         "200":
           description: Success
@@ -304,6 +388,23 @@ definitions:
               type: string
             attributes:
               type: object
+  GetAllocationsListResponse:
+    required:
+      - allocations
+    properties:
+      allocations:
+        type: array
+        items: 
+          type: object
+          properties:
+            id:
+              type: integer
+            user_id: 
+              type: integer
+            asset_id:
+              type: integer
+            untill:
+              type: string
   User:
     type: object
     properties:
@@ -335,11 +436,14 @@ definitions:
     properties:
       user_id:
         type: integer
+        default: 2
       asset_id:
         type: integer
+        default: 1
       untill:
         type: string
         description: untill when is the asset allocated to the user
+        default: '2017-05-16 00:00:00'
     required:
       - user_id
       - asset_id
@@ -381,18 +485,22 @@ definitions:
         type: string
       attributes:
         type: object
-  GetAllocationsListResponse:
+  GetAllocationResponse:
     required:
       - id
+      - user_id
+      - asset_id
+      - untill
     properties:
       id:
         type: integer
-      user_id: 
-        type: string
+      user_id:
+        type: integer
       asset_id:
-        type: string
+        type: integer
       untill:
         type: string
+        description: untill when is the asset allocated to the user
   ErrorResponse:
     required:
       - message
