@@ -26,6 +26,10 @@
                     console.log(err);
                 }
 
+                console.log('-.-..-.-.-.-.-.-.');
+                console.log(req.body);
+                console.log(result);
+
                 res.json({
                     success: 1, 
                     description: "Allocation added to the list!", 

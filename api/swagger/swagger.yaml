@@ -148,11 +148,10 @@ paths:
     post:
       tags: ['asset']
       description: add a new asset to the list
-
-      # movie info to be stored
+      operationId: saveAsset
       parameters:
-        - name: id
-          description: asset's id
+        - name: asset
+          description: asset object
           in: body
           required: true
           schema:
@@ -254,11 +253,10 @@ paths:
     post:
       tags: ['allocation']
       description: add a new allocation to the list
-
-      # movie info to be stored
+      operationId: saveAllocation
       parameters:
-        - name: id
-          description: allocation's id
+        - name: allocation
+          description: allocation object
           in: body
           required: true
           schema:
@@ -301,8 +299,10 @@ definitions:
           type: object
           properties:
             id:
+              type: integer
+            type:
               type: string
-            body:
+            attributes:
               type: object
   User:
     type: object
@@ -323,8 +323,6 @@ definitions:
   Asset:
     type: object
     properties:
-      id:
-        type: string
       type:
         type: string
       attributes:
@@ -335,12 +333,10 @@ definitions:
   Allocation:
     type: object
     properties:
-      id:
-        type: string
       user_id:
-        type: string
+        type: integer
       asset_id:
-        type: string
+        type: integer
       untill:
         type: string
         description: untill when is the asset allocated to the user
@@ -390,7 +386,7 @@ definitions:
       - id
     properties:
       id:
-        type: string
+        type: integer
       user_id: 
         type: string
       asset_id:
