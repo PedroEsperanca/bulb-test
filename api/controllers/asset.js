@@ -20,9 +20,11 @@
     //POST /asset
     function saveAsset(req, res, next) {
 
+        var attributes = filterAttributes(req.body.type, req.body.attributes);
+
         pool.query(
             "INSERT INTO assets(type, attributes) values($1, $2) returning *", 
-            [req.body.type, req.body.attributes], 
+            [req.body.type, attributes], 
             function(err, result) {
             
                 if(err){
@@ -67,10 +69,11 @@
     function updateAsset(req, res, next) {
 
         var id = req.swagger.params.id.value;
+        var attributes = filterAttributes(req.body.type, req.body.attributes);
 
         pool.query(
-            "UPDATE assets SET type=($1), attributes=($2), WHERE id=($3) returning *",
-            [req.body.type, req.body.attributes, id],
+            "UPDATE assets SET type=($1), attributes=($2) WHERE id=($3) returning *",
+            [req.body.type, attributes, id],
             function(err, result) {
 
                 if(err){
@@ -110,3 +113,27 @@
             });
 
     }
+
+
+    /*
+        Private
+     */
+    
+    //ensures that only the predefined attributes affect each specific type
+    function filterAttributes(type, attributes){
+        if(type === 'type1'){
+            return {
+                attr_1_a: attributes.attr_1_a,
+                attr_1_b: attributes.attr_1_b,
+            };
+        }
+        else if(type === 'type2'){
+            return {
+                attr_2_a: attributes.attr_2_a,
+                attr_2_b: attributes.attr_2_b,
+            };
+        }
+        else {
+            return {};
+        }
+    };

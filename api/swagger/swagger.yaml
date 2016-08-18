@@ -426,9 +426,16 @@ definitions:
     properties:
       type:
         type: string
+        default: 'type1'
       attributes:
         type: object
         description: asset's information
+        default: {
+          attr_1_a: 'attribute a for type 1',
+          attr_1_b: 'attribute b for type 1',
+          attr_2_a: 'attribute a for type 2',
+          attr_2_b: 'attribute b for type 2',
+        }
     required:
       - type
   Allocation:
