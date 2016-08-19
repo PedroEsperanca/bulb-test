@@ -98,8 +98,6 @@
                     console.log(err);
                 }
 
-                console.log(result);
-
                 res.json({
                     success: 1, 
                     description: "User deleted!", 
